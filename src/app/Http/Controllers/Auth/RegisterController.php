@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class RegisterController extends Controller
 {
     public function showRegistrationForm(){
-        return view('auth.register');
+        return inertia('Auth/Register');
     }
 
     public function register(RegisterRequest $request){

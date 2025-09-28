@@ -148,6 +148,7 @@ body {
 .content-heading {
     text-align: center;
     margin: 50px auto;
+    padding-bottom: 50px;
 }
 
 .content-form-wrapper {

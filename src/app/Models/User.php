@@ -70,4 +70,13 @@ class User extends Authenticatable implements MustVerifyEmail
     public function likedItems() {
         return $this->belongsToMany(Item::class, 'likes')->withTimestamps();
     }
+
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->image_filename) {
+            return asset('storage/users/' . $this->image_filename);
+        }
+        // 画像がない場合は null か、デフォルト画像のパスを返す
+        return asset('images/no-image.png');
+    }
 }

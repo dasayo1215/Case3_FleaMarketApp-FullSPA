@@ -12,6 +12,7 @@ use App\Models\ItemCondition;
 use App\Models\Item;
 use App\Models\Like;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class ItemController extends Controller
 {
@@ -37,7 +38,11 @@ class ItemController extends Controller
 
         $items = $query->latest()->get();
 
-        return view('items.index', compact('items', 'keyword', 'page'));
+        return Inertia::render('Items/Index', [
+            'items' => $items,
+            'keyword' => $keyword,
+            'page' => $page,
+        ]);
     }
 
     public function showMyList(Request $request) {
@@ -61,10 +66,30 @@ class ItemController extends Controller
         return view('items.index', compact('items', 'keyword', 'page'));
     }
 
-    public function showItem($itemId){
-        $item = Item::with(['categories', 'itemCondition', 'purchase'])->findOrFail($itemId);
+    public function showItem($itemId)
+    {
+        $item = Item::with([
+            'categories',
+            'itemCondition',
+            'purchase',
+            'comments.user',   // ← コメントとユーザー情報を一緒にロード！
+            'likes',
+        ])->findOrFail($itemId);
+
         $user = Auth::user();
-        return view('items.show', compact('item', 'user'));
+
+        return Inertia::render('Items/Show', [
+            'item' => $item,
+            'user' => $user,
+            'isLiked' => $user ? $item->isLikedBy($user) : false, // ← これ必須
+            'likeCount' => $item->likes->count(),
+            'commentCount' => $item->comments->count(),
+            'comments' => $item->comments->map(fn($c) => [
+                'user_name' => $c->user->name,
+                'user_image' => $c->user->image_filename,
+                'text' => $c->comment,
+            ]),
+        ]);
     }
 
     public function storeComment(CommentRequest $request, $itemId){
@@ -115,10 +140,15 @@ class ItemController extends Controller
         return back();
     }
 
-    public function showSellForm(){
+    public function showSellForm()
+    {
         $categories = Category::all();
         $conditions = ItemCondition::all();
-        return view('items.create', compact('categories', 'conditions'));
+
+        return Inertia::render('Items/Create', [
+            'categories' => $categories,
+            'conditions' => $conditions,
+        ]);
     }
 
     public function storeItem(ExhibitionRequest $request)
@@ -126,7 +156,6 @@ class ItemController extends Controller
         $validated = $request->validated();
         $sellerId = auth()->id();
 
-        // 新しい Item インスタンス生成
         $item = new Item();
         $item->name = $validated['name'];
         $item->brand = $validated['brand'] ?? null;
@@ -135,11 +164,11 @@ class ItemController extends Controller
         $item->item_condition_id = $validated['item_condition_id'];
         $item->seller_id = $sellerId;
 
-        // 仮に空で保存（画像ファイル名にIDを使いたいため）
+        // 仮保存
         $item->image_filename = '';
         $item->save();
 
-        // 画像の一時パスから正式ファイル名に変更して移動
+        // 画像の移動
         $tmpPath = $validated['sell_uploaded_image_path'];
         if ($tmpPath && \Storage::disk('public')->exists($tmpPath)) {
             $extension = pathinfo($tmpPath, PATHINFO_EXTENSION);
@@ -151,7 +180,7 @@ class ItemController extends Controller
 
         $item->categories()->sync($validated['category_id']);
 
-        return redirect('/mypage');
+        return redirect()->route('mypage');
     }
 
     public function uploadItemImage(UploadImageRequest $request) {
@@ -162,5 +191,10 @@ class ItemController extends Controller
             'path' => $path,
             'image_url' => asset('storage/' . $path),
         ]);
+    }
+
+    public function index(){
+
+        return response()->json(Item::all());
     }
 }

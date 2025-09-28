@@ -1,11 +1,12 @@
 .content-wrapper-small {
     margin: 50px auto 0;
-    display: flex;
-    flex-wrap: wrap;
-	width: 90%;
-	max-width: 1540px;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 90%;
+    max-width: 1540px;
 }
+
 
 .page {
     display: flex;
@@ -45,12 +46,6 @@
     width: 200px;
     height: 200px;
     border: solid #ccc 1px;
-}
-
-.item-container-empty {
-    margin: 10px;
-    width: 200px;
-    border: solid 1px white;
 }
 
 .item-name {

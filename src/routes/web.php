@@ -9,6 +9,8 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
+use Inertia\Inertia;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,7 +30,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::get('/login', [LoginController::class, 'showLoginForm']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
-Route::get('/item/{itemId}', [ItemController::class, 'showItem']);
+Route::get('/item/{itemId}', [ItemController::class, 'showItem'])->name('item.show');;
 
 Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/purchase/{itemId}', [PurchaseController::class, 'showPurchaseForm'])->name('purchase.show');
@@ -37,8 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/purchase/address/{itemId}', [PurchaseController::class, 'showAddressForm']);
     Route::post('/purchase/address/{itemId}', [PurchaseController::class, 'updateAddress']);
     Route::get('/sell', [ItemController::class, 'showSellForm'])->name('sell');
-    Route::post('/sell', [ItemController::class, 'storeItem'])->name('store');
-    Route::post('/sell/image', [ItemController::class, 'uploadItemImage']);
+    Route::post('/sell', [ItemController::class, 'storeItem'])->name('sell.store');
+    Route::post('/sell/image', [ItemController::class, 'uploadItemImage'])->name('sell.image');
     Route::get('/mypage', [UserController::class, 'showProfile'])->name('mypage');
     Route::get('/mypage/profile', [UserController::class, 'editProfile'])->name('profile.edit');
     Route::patch('/mypage/profile', [UserController::class, 'updateProfile']);
@@ -60,3 +62,8 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 've
 
 // webhookで商品決済完了を記録
 Route::post('/webhook/stripe', [StripeWebhookController::class, 'handlePayment']);
+
+// Viteのテスト
+Route::get('/hello', function () {
+    return inertia('Hello');
+});

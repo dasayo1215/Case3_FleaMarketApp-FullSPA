@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     public function showLoginForm(){
-        return view('auth.login');
+        return inertia('Auth/Login');
     }
 
     //ログイン処理：Fortifyのバリデーションは利用せずフォームリクエストを利用
@@ -24,6 +24,6 @@ class LoginController extends Controller
             ])->withInput();
         }
 
-        return redirect('/?page=mylist');
+        return redirect()->route('mypage');
     }
 }

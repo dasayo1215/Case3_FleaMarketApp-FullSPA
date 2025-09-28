@@ -8,43 +8,53 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Requests\AddressRequest;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    public function showProfile(Request $request){
-        $page = $request->query('page');
+    public function showProfile(Request $request)
+    {
+        $user = $request->user();
+        $page = $request->query('page', 'sell'); // デフォルトは出品タブ
 
-        if($page === 'buy'){
-            return $this->showPurchasedItems();
-        }else{
-            return $this->showListedItems();
-        }
-    }
+        // 出品商品
+        $sellItems = Item::where('seller_id', $user->id)
+            ->with('purchase')
+            ->latest()
+            ->get();
 
-    public function showPurchasedItems(){
-        // 購入した商品を表示させる(購入した順)
-        $user = Auth::user();
-        $items = Item::whereHas('purchase', function($query) use ($user) {
-            $query->where('buyer_id', $user->id)->whereNotNull('completed_at');
-        })->with('purchase')->get()
+        // 購入商品
+        $buyItems = Item::whereHas('purchase', function ($query) use ($user) {
+                $query->where('buyer_id', $user->id)
+                    ->whereNotNull('completed_at');
+            })
+            ->with('purchase')
+            ->get()
             ->sortByDesc(fn($item) => $item->purchase->completed_at)
             ->values();
-        return view('users.show', compact('items', 'user'));
-    }
 
-    public function showListedItems(){
-        // 出品した商品を表示させる(出品した順)
-        $user = Auth::user();
-        $items = Item::where('seller_id', $user->id)
-        ->with('purchase')
-        ->latest()
-        ->get();
-        return view('users.show', compact('items', 'user'));
+        return inertia('Mypage', [
+            'auth' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'profile_image_url' => $user->profile_image_url,
+                ],
+            ],
+            'page' => $page,
+            'sellItems' => $sellItems,
+            'buyItems' => $buyItems,
+        ]);
     }
 
     public function editProfile(){
         $user = Auth::user();
-        return view('users.edit', compact('user'));
+
+        return Inertia::render('Users/Edit', [
+            'auth' => [
+                'user' => $user,
+            ],
+        ]);
     }
 
     public function updateProfile(AddressRequest $request){
@@ -66,7 +76,7 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect('/');
+        return redirect()->route('index');
     }
 
     public function uploadProfileImage(ProfileRequest $request) {

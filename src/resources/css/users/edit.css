@@ -29,6 +29,8 @@
     border-radius: 5px;
     border: 2px solid rgb(255, 85, 85);
     font-size: 14px;
+    white-space: nowrap;
+    text-align: center;
 }
 
 .content-form-input {

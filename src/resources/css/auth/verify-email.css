@@ -1,0 +1,47 @@
+.content-wrapper-small {
+  margin: 0 auto;
+  width: 90%;
+  max-width: 1540px;
+
+  display: flex;              /* Flexbox を有効化 */
+  flex-direction: column;     /* 縦に並べる */
+  align-items: center;        /* 子要素を左右中央寄せ */
+  text-align: center;         /* テキストも中央寄せ */
+}
+
+.content-form {
+	width: 100%;
+}
+
+.verify-text {
+  display: block;        /* ブロック要素 */
+  text-align: center;    /* テキスト中央寄せ */
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+.verify-text.message {
+  margin-top: 150px;
+}
+
+.mail-link {
+  display: block;        /* ボタンをブロック化 */
+  width: fit-content;    /* ボタン幅は内容に合わせる */
+  margin: 30px auto 0;   /* 左右autoで中央寄せ */
+  text-align: center;    /* 中の文字も中央 */
+  
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  background-color: rgb(217, 217, 217);
+  border: solid black 1px;
+  padding: 10px 20px;
+  border-radius: 3px;
+}
+
+.content-btn {
+	display: block;
+    margin: 50px auto 0;
+	cursor: pointer;
+}

@@ -9,7 +9,7 @@ class EmailVerificationController extends Controller
 {
     public function showNotice()
     {
-        return view('auth.verify-email');
+        return inertia('Auth/VerifyEmail');
     }
 
     public function verifyEmail(EmailVerificationRequest $request)
