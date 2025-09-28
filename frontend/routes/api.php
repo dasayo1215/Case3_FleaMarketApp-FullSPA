@@ -19,5 +19,5 @@ use App\Http\Controllers\ItemController;
 //     return $request->user();
 // });
 
-
+Route::get('/items', [ItemController::class, 'index']);
 

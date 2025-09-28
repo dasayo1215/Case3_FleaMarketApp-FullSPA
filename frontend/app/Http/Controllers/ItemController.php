@@ -16,6 +16,11 @@ use Inertia\Inertia;
 
 class ItemController extends Controller
 {
+    public function index()
+    {
+        return response()->json(Item::all());
+    }
+
     public function listAvailableItems(Request $request) {
         $page = $request->query('page');
         $keyword = $request->query('keyword');
