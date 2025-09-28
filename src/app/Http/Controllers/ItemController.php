@@ -192,9 +192,4 @@ class ItemController extends Controller
             'image_url' => asset('storage/' . $path),
         ]);
     }
-
-    public function index(){
-
-        return response()->json(Item::all());
-    }
 }
