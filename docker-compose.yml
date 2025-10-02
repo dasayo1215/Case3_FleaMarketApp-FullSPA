@@ -5,15 +5,18 @@ services:
             - '80:80'
         volumes:
             - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
-            - ./src:/var/www/
+            - ./frontend:/var/www/frontend
+            - ./backend:/var/www/backend
         depends_on:
             - php
+            - mysql
 
     php:
         build: ./docker/php
         volumes:
-            - ./src:/var/www/
+            - ./backend:/var/www/backend
             - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+        working_dir: /var/www/backend
 
     mysql:
         image: mysql:8.0.26
@@ -39,19 +42,19 @@ services:
         ports:
             - 8080:80
 
-    mail:
-        image: mailhog/mailhog
-        container_name: mailhog
-        ports:
-            - "8025:8025"
-            - "1025:1025"
+    # mail:
+    #     image: mailhog/mailhog
+    #     container_name: mailhog
+    #     ports:
+    #         - "8025:8025"
+    #         - "1025:1025"
 
-    stripe-cli:
-        image: stripe/stripe-cli
-        container_name: stripe-cli
-        volumes:
-            - ~/.config/stripe:/root/.config/stripe
-        command: >
-            listen --forward-to http://host.docker.internal/webhook/stripe
-        restart: unless-stopped
+    # stripe-cli:
+    #     image: stripe/stripe-cli
+    #     container_name: stripe-cli
+    #     volumes:
+    #         - ~/.config/stripe:/root/.config/stripe
+    #     command: >
+    #         listen --forward-to http://host.docker.internal/webhook/stripe
+    #     restart: unless-stopped
 
