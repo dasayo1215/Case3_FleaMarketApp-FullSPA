@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
     public function index()
     {
-        // ダミーデータを返す
-        return response()->json([
-            ['id' => 1, 'name' => 'サンプル商品A', 'price' => 1000],
-            ['id' => 2, 'name' => 'サンプル商品B', 'price' => 2000],
-        ]);
+        // DBの items テーブルから全件取得して返す
+        $items = Item::all();
+
+        return response()->json($items);
+    }
+
+    public function show($id)
+    {
+        $item = Item::findOrFail($id);
+        return response()->json($item);
     }
 }

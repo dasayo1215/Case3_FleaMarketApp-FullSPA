@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default function ItemList() {
 	const [items, setItems] = useState([]);
@@ -16,7 +17,9 @@ export default function ItemList() {
 			<ul>
 				{items.map((item) => (
 					<li key={item.id}>
-						{item.name} - ￥{item.price}
+						<Link to={`/items/${item.id}`}>
+							{item.name} - ￥{item.price}
+						</Link>
 					</li>
 				))}
 			</ul>
